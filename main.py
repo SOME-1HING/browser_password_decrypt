@@ -50,11 +50,15 @@ For details, visit https://www.gnu.org/licenses/'.
 
         print("=" * 50, end="\n\n")
 
+        print(
+            "[?] I hereby confirm that I am using this script solely for educational purposes and not for any malicious activities."
+        )
+
         if inquirer.prompt(
             [
                 inquirer.Confirm(
                     "continue",
-                    message="I hereby confirm that I am using this script solely for educational purposes and not for any malicious activities.",
+                    message="Press 'y' to agree and continue or 'n' to exit",
                 )
             ]
         ) == {"continue": False}:
@@ -77,7 +81,7 @@ For details, visit https://www.gnu.org/licenses/'.
             ]
         )
 
-        self.browser = browser["browser"]
+        self.browser = browser["browser"]  # type: ignore
 
         self.source_path = os.path.normpath("C:\\Users\\" + self.win_user_account)
 
