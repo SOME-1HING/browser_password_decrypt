@@ -171,7 +171,7 @@ For details, visit https://www.gnu.org/licenses/'.
             inquirer.List(
                 "user",
                 message="Select a Windows user account",
-                choices=[profile["Name"] for profile in self.get_win_user_accounts()],
+                choices=self.get_win_user_accounts(),
             )
         ]
 
@@ -183,38 +183,27 @@ For details, visit https://www.gnu.org/licenses/'.
             print("[-] No user profile selected")
             sys.exit(1)
 
-    def get_win_user_accounts(self) -> list[dict]:
-        cmd = 'Get-WmiObject Win32_UserAccount -filter "LocalAccount=True" | Select-Object Name,FullName,Disabled'
-
-        users = subprocess.run(
-            ["powershell", "-Command", cmd], capture_output=True
-        ).stdout.decode()
-
-        return self.convert_string_to_json(users)  # type: ignore
-
-    def convert_string_to_json(self, input_string: str) -> dict:
-        """Converts the string to JSON
-
-        Args:
-            input_string (str): Input string
+    def get_win_user_accounts(self) -> list[str]:
+        """Get the Windows user account
 
         Returns:
-            dict: JSON object
+            list[str]: List of Windows user account
         """
-        # Splitting the string into lines
-        lines = input_string.strip().split("\n")
+        folders = []
+        path = "C:\\Users" + "\\"
 
-        # Extracting header and data rows
-        header = re.split(r"\s{2,}", lines[0].strip())
-        data = [re.split(r"\s{2,}", line.strip()) for line in lines[2:]]
+        for dir in glob(
+            path + "*\\",
+            recursive=True,
+        ):
 
-        # Creating dictionary from the data
-        result = [{header[i]: value for i, value in enumerate(row)} for row in data]
+            folder = os.path.normpath(dir).replace("\\", "\\").replace(path, "")
 
-        # Converting to JSON
-        json_output = json.dumps(result, indent=4)
+            folders.append(folder)
 
-        return eval(json_output)
+
+        return folders
+
 
     def check_browser(self) -> bool:
         """Checks whether the browser is installed or not
